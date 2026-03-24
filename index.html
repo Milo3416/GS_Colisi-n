@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Siniestro de Colisión</title>
+  <style>
+    :root {
+      --gs-green: #0d6b5f;
+      --gs-green-dark: #094b43;
+      --gs-green-soft: #e9f6f3;
+      --gs-gold: #c7a35a;
+      --gs-text: #17312d;
+      --gs-muted: #5f736f;
+      --gs-border: #d9e7e3;
+      --white: #ffffff;
+      --danger: #b42318;
+      --shadow: 0 20px 45px rgba(9, 75, 67, 0.12);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--gs-text);
+      background:
+        radial-gradient(circle at top left, rgba(13,107,95,.12), transparent 30%),
+        linear-gradient(180deg, #f7fbfa 0%, #eef7f4 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand img {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+      background: var(--white);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 6px 18px rgba(9, 75, 67, .08);
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+
+    .brand-copy p {
+      margin: 6px 0 0;
+      color: var(--gs-muted);
+      font-size: .96rem;
+    }
+
+    .status-badge {
+      background: rgba(199, 163, 90, 0.15);
+      color: #7b5b1f;
+      border: 1px solid rgba(199, 163, 90, 0.35);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 26px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-card,
+    .result-card,
+    .form-card {
+      background: var(--white);
+      border: 1px solid rgba(13,107,95,.08);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      right: -70px;
+      top: -60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13,107,95,.20), transparent 65%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--gs-green-soft);
+      color: var(--gs-green);
+      font-weight: 700;
+      font-size: .85rem;
+      margin-bottom: 14px;
+    }
+
+    .hero-card h2 {
+      margin: 0 0 12px;
+      font-size: 2rem;
+      line-height: 1.08;
+      max-width: 12ch;
+    }
+
+    .hero-card p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--gs-muted);
+      max-width: 58ch;
+      line-height: 1.6;
+    }
+
+    .hero-grid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini-stat {
+      background: #f8fcfb;
+      border: 1px solid var(--gs-border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .mini-stat span {
+      color: var(--gs-muted);
+      font-size: .92rem;
+      line-height: 1.4;
+    }
+
+    .result-card {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f4fbf9 100%);
+    }
+
+    .result-header h3,
+    .form-title h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .result-header p,
+    .form-title p {
+      margin: 8px 0 0;
+      color: var(--gs-muted);
+      line-height: 1.5;
+    }
+
+    .folio-box {
+      border-radius: 20px;
+      padding: 22px;
+      background: linear-gradient(135deg, var(--gs-green-dark), var(--gs-green));
+      color: var(--white);
+      text-align: center;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .folio-box .label {
+      font-size: .9rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .8;
+    }
+
+    .folio-box .value {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+
+    .folio-box .hint {
+      margin: 0;
+      max-width: 28ch;
+      font-size: .95rem;
+      opacity: .88;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gs-border);
+      font-size: .95rem;
+    }
+
+    .summary-item:last-child { border-bottom: none; }
+
+    .summary-item span:first-child {
+      color: var(--gs-muted);
+      font-weight: 600;
+    }
+
+    .summary-item span:last-child {
+      text-align: right;
+      font-weight: 700;
+      color: var(--gs-text);
+      word-break: break-word;
+    }
+
+    .form-card {
+      padding: 28px;
+    }
+
+    form {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .field,
+    .field-full {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    label {
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--gs-border);
+      background: #fcfefd;
+      border-radius: var(--radius-md);
+      padding: 14px 14px;
+      font: inherit;
+      color: var(--gs-text);
+      transition: .2s ease;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--gs-green);
+      box-shadow: 0 0 0 4px rgba(13,107,95,.12);
+      background: var(--white);
+    }
+
+    .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 8px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gs-green), var(--gs-green-dark));
+      color: var(--white);
+      box-shadow: 0 12px 24px rgba(13,107,95,.18);
+    }
+
+    .btn-secondary {
+      background: #f4f8f7;
+      color: var(--gs-text);
+      border: 1px solid var(--gs-border);
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fffaf0;
+      border: 1px solid rgba(199, 163, 90, .35);
+      color: #6f5420;
+      font-size: .93rem;
+      line-height: 1.5;
+    }
+
+    .validation {
+      color: var(--danger);
+      font-size: .9rem;
+      min-height: 1.2em;
+    }
+
+    @media (max-width: 940px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-grid { grid-template-columns: 1fr; }
+      form { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { padding: 18px; }
+      .hero-card, .result-card, .form-card { padding: 20px; }
+      .brand { align-items: flex-start; }
+      .brand img { height: 48px; }
+      .hero-card h2 { font-size: 1.65rem; }
+      .summary-item { flex-direction: column; }
+      .summary-item span:last-child { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <img src="https://generaldeseguros.mx/wp-content/uploads/2024/05/Logo-General-de-Seguro-e1715271213860.webp" alt="General de Seguros" />
+        <div class="brand-copy">
+          <h1>Registro de Siniestro de Colisión</h1>
+          <p>Captura rápida de datos y generación automática de folio.</p>
+        </div>
+      </div>
+      <div class="status-badge">General de Seguros · Siniestro de Colisión</div>
+    </div>
+
+    <section class="hero">
+      <article class="hero-card">
+        <div class="eyebrow">Siniestro de colisión</div>
+        <h2>Registra la información del asegurado en un solo flujo</h2>
+        <p>
+          Completa los datos del evento, valida la información esencial y genera un folio aleatorio
+          que se muestra de inmediato en la pantalla principal para seguimiento.
+        </p>
+
+        <div class="hero-grid">
+          <div class="mini-stat">
+            <strong>Captura guiada</strong>
+            <span>Formulario listo para nombre, póliza, ubicación, hechos y vehículo.</span>
+          </div>
+          <div class="mini-stat">
+            <strong>Validación básica</strong>
+            <span>Se revisan campos obligatorios antes de generar el folio.</span>
+          </div>
+          <div class="mini-stat">
+            <strong>Folio inmediato</strong>
+            <span>El identificador aparece en la vista principal al terminar.</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="result-card">
+        <div class="result-header">
+          <h3>Resultado del registro</h3>
+          <p>Al enviar el formulario, aquí se mostrará el folio generado junto con un resumen del caso.</p>
+        </div>
+
+        <div class="folio-box">
+          <div class="label">Folio asignado</div>
+          <div class="value" id="folioDisplay">PENDIENTE</div>
+          <p class="hint">Completa el formulario para generar un identificador del siniestro.</p>
+        </div>
+
+        <div class="summary-list">
+          <div class="summary-item"><span>Nombre</span><span id="summaryNombre">—</span></div>
+          <div class="summary-item"><span>Teléfono</span><span id="summaryTelefono">—</span></div>
+          <div class="summary-item"><span>Póliza</span><span id="summaryPoliza">—</span></div>
+          <div class="summary-item"><span>Riesgo</span><span id="summaryRiesgo">—</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="form-card">
+      <div class="form-title">
+        <h3>Datos del siniestro</h3>
+        <p>Registra la información solicitada en sistema para el siniestro de colisión.</p>
+      </div>
+
+      <form id="siniestroForm">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" type="text" placeholder="Nombre completo" required />
+        </div>
+
+        <div class="field">
+          <label for="telefono">Teléfono</label>
+          <input id="telefono" name="telefono" type="tel" placeholder="55 1234 5678" required />
+        </div>
+
+        <div class="field">
+          <label for="poliza">Póliza</label>
+          <input id="poliza" name="poliza" type="text" placeholder="Número de póliza" required />
+        </div>
+
+        <div class="field">
+          <label for="riesgo">Elige el riesgo</label>
+          <select id="riesgo" name="riesgo" required>
+            <option value="Riesgo 1" selected>Riesgo 1</option>
+            <option value="Riesgo 2" selected>Riesgo 2</option>
+            <option value="Riesgo 3" selected>Riesgo 3</option>
+            <option value="Riesgo 4" selected>Riesgo 4</option>
+            <option value="Riesgo 5" selected>Riesgo 5</option>
+          </select>
+        </div>
+
+        <div class="field-full">
+          <label for="ubicacion">Ubicación</label>
+          <input id="ubicacion" name="ubicacion" type="text" placeholder="Dirección o referencia del incidente" required />
+        </div>
+
+        <div class="field-full">
+          <label for="declaracion">Declaración de hechos (incluye nombre del conductor)</label>
+          <textarea id="declaracion" name="declaracion" placeholder="Describe brevemente lo ocurrido e incluye el nombre del conductor" required></textarea>
+        </div>
+
+        <div class="field-full">
+          <label for="vehiculo">Datos del vehículo</label>
+          <textarea id="vehiculo" name="vehiculo" placeholder="Marca, modelo, color, placas y cualquier otro dato relevante" required></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">Generar folio</button>
+          <button type="button" class="btn-secondary" id="resetBtn">Limpiar formulario</button>
+        </div>
+
+        <div class="field-full">
+          <div class="validation" id="validationMessage"></div>
+        </div>
+      </form>
+
+      <div class="note">
+        Este página es demostrativa y es un prototipo para genera folios aleatorios en pantalla.Genesys 2026
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById('siniestroForm');
+    const resetBtn = document.getElementById('resetBtn');
+    const validationMessage = document.getElementById('validationMessage');
+
+    const folioDisplay = document.getElementById('folioDisplay');
+    const summaryNombre = document.getElementById('summaryNombre');
+    const summaryTelefono = document.getElementById('summaryTelefono');
+    const summaryPoliza = document.getElementById('summaryPoliza');
+    const summaryRiesgo = document.getElementById('summaryRiesgo');
+
+    function generarFolio() {
+      const ahora = new Date();
+      const fecha = `${ahora.getFullYear()}${String(ahora.getMonth() + 1).padStart(2, '0')}${String(ahora.getDate()).padStart(2, '0')}`;
+      const random = Math.floor(100000 + Math.random() * 900000);
+      return `GS-COL-${fecha}-${random}`;
+    }
+
+    function limpiarResumen() {
+      folioDisplay.textContent = 'PENDIENTE';
+      summaryNombre.textContent = '—';
+      summaryTelefono.textContent = '—';
+      summaryPoliza.textContent = '—';
+      summaryRiesgo.textContent = '—';
+      validationMessage.textContent = '';
+    }
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      validationMessage.textContent = '';
+
+      if (!form.reportValidity()) {
+        validationMessage.textContent = 'Completa todos los campos obligatorios antes de generar el folio.';
+        return;
+      }
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const telefono = document.getElementById('telefono').value.trim();
+      const poliza = document.getElementById('poliza').value.trim();
+      const riesgo = document.getElementById('riesgo').value.trim();
+      const declaracion = document.getElementById('declaracion').value.trim();
+
+      if (!declaracion.toLowerCase().includes('conductor')) {
+        validationMessage.textContent = 'Recuerda incluir en la declaración el nombre del conductor.';
+      }
+
+      const folio = generarFolio();
+      folioDisplay.textContent = folio;
+      summaryNombre.textContent = nombre || '—';
+      summaryTelefono.textContent = telefono || '—';
+      summaryPoliza.textContent = poliza || '—';
+      summaryRiesgo.textContent = riesgo || '—';
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    resetBtn.addEventListener('click', function () {
+      form.reset();
+      document.getElementById('riesgo').value = 'Riesgo 1';
+      limpiarResumen();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    limpiarResumen();
+  </script>
+</body>
+</html>
